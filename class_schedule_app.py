@@ -1,5 +1,3 @@
-# Generate updated Streamlit code with Apple-like minimalist UI and all previous logic
-apple_ui_code = """
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -8,7 +6,7 @@ import base64
 st.set_page_config(page_title="Class Schedule Converter", layout="centered")
 
 # Apple-like minimal CSS
-st.markdown(\"""
+st.markdown("""
 <style>
 body {
   background: #f8f9fa;
@@ -43,7 +41,7 @@ a {
   text-decoration: none;
 }
 </style>
-\""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 lang = st.selectbox("🌍 Language / Język / Мова", ["English", "Polski", "Українська"])
 
@@ -146,9 +144,3 @@ with tab2:
     st.write(text["about_3"])
     st.write(text["about_4"])
     st.markdown(f'<a href="https://www.linkedin.com/in/vasyl-madei-399488247/" target="_blank">{text["linkedin"]}</a>', unsafe_allow_html=True)
-"""
-
-with open("/mnt/data/class_schedule_apple_ui.py", "w") as f:
-    f.write(apple_ui_code)
-
-"/mnt/data/class_schedule_apple_ui.py"
