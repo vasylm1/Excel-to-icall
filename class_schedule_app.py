@@ -5,7 +5,7 @@ import base64
 
 st.set_page_config(page_title="Class Schedule Converter", layout="centered")
 
-# Apple-like minimalist CSS
+# Minimal Apple-style CSS
 st.markdown("""
 <style>
 body {
@@ -15,38 +15,25 @@ body {
 h1, h2 {
   color: #1c1c1e;
   font-weight: 600;
-  padding-bottom: 0.5rem;
   text-align: center;
-}
-.stSelectbox, .stFileUploader {
-  background: #ffffff;
-  border: 1px solid #d1d1d6;
-  border-radius: 12px;
-  padding: 0.6rem 1rem;
 }
 .stButton button, .stDownloadButton button {
   background: #007aff;
   color: white;
-  border: none;
   border-radius: 12px;
   padding: 0.6rem 1.2rem;
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border: none;
 }
 .stDownloadButton button {
   background: #34c759;
 }
-a {
-  color: #007aff;
-  text-decoration: none;
-}
 </style>
 """, unsafe_allow_html=True)
 
-# Language selection
+# Language translations
 lang = st.selectbox("🌍 Language / Język / Мова", ["English", "Polski", "Українська"])
 
-# Translations
 text = {
     "English": {
         "title": "📅 Class Schedule Converter",
@@ -97,8 +84,7 @@ def format_datetime(value):
             return ""
     if isinstance(value, (float, int)):
         try:
-            parsed = pd.to_datetime("1899-12-30") + pd.to_timedelta(value, unit="D")
-            return parsed.strftime("%Y%m%dT%H%M00")
+            return (pd.to_datetime("1899-12-30") + pd.to_timedelta(value, unit="D")).strftime("%Y%m%dT%H%M00")
         except:
             return ""
     if isinstance(value, datetime):
@@ -113,21 +99,31 @@ with tab1:
         try:
             df = pd.read_excel(uploaded_file, header=None)
             events = []
+
             for i, row in df.iterrows():
                 if i == 0: continue
                 start = format_datetime(row[0])
                 end = format_datetime(row[1])
                 summary = str(row[4]) if not pd.isna(row[4]) else ""
-                description = "\\n".join(str(row[c]) for c in [6,7,8,9] if not pd.isna(row[c]))
+                description_parts = [str(row[c]) for c in [6, 7, 8, 9] if not pd.isna(row[c])]
+                description = "\n".join(description_parts)
                 location = str(row[10]) if not pd.isna(row[10]) else ""
-                if start and end and summary:
-                    event = f"BEGIN:VEVENT\\nDTSTART:{start}\\nDTEND:{end}\\nSUMMARY:{summary}"
-                    if description: event += f"\\nDESCRIPTION:{description}"
-                    if location: event += f"\\nLOCATION:{location}"
-                    event += "\\nEND:VEVENT"
-                    events.append(event)
 
-            ics = "BEGIN:VCALENDAR\\nVERSION:2.0\\nCALSCALE:GREGORIAN\\n" + "\\n".join(events) + "\\nEND:VCALENDAR"
+                if start and end and summary:
+                    event = [
+                        "BEGIN:VEVENT",
+                        f"DTSTART:{start}",
+                        f"DTEND:{end}",
+                        f"SUMMARY:{summary}"
+                    ]
+                    if description:
+                        event.append(f"DESCRIPTION:{description}")
+                    if location:
+                        event.append(f"LOCATION:{location}")
+                    event.append("END:VEVENT")
+                    events.append("\n".join(event))
+
+            ics = "BEGIN:VCALENDAR\nVERSION:2.0\nCALSCALE:GREGORIAN\n" + "\n".join(events) + "\nEND:VCALENDAR"
 
             st.success(text["success"])
             b64 = base64.b64encode(ics.encode()).decode()
