@@ -5,7 +5,7 @@ import base64
 
 st.set_page_config(page_title="Class Schedule Converter", layout="centered")
 
-# Apple-like minimal CSS
+# Apple-like minimalist CSS
 st.markdown("""
 <style>
 body {
@@ -18,7 +18,7 @@ h1, h2 {
   padding-bottom: 0.5rem;
   text-align: center;
 }
-.stSelectbox, .stFileUploader, .stTextInput {
+.stSelectbox, .stFileUploader {
   background: #ffffff;
   border: 1px solid #d1d1d6;
   border-radius: 12px;
@@ -43,8 +43,10 @@ a {
 </style>
 """, unsafe_allow_html=True)
 
+# Language selection
 lang = st.selectbox("🌍 Language / Język / Мова", ["English", "Polski", "Українська"])
 
+# Translations
 text = {
     "English": {
         "title": "📅 Class Schedule Converter",
@@ -116,7 +118,7 @@ with tab1:
                 start = format_datetime(row[0])
                 end = format_datetime(row[1])
                 summary = str(row[4]) if not pd.isna(row[4]) else ""
-                description = "\\n".join(str(row[c]) for c in [6,7,8] if not pd.isna(row[c]))
+                description = "\\n".join(str(row[c]) for c in [6,7,8,9] if not pd.isna(row[c]))
                 location = str(row[10]) if not pd.isna(row[10]) else ""
                 if start and end and summary:
                     event = f"BEGIN:VEVENT\\nDTSTART:{start}\\nDTEND:{end}\\nSUMMARY:{summary}"
